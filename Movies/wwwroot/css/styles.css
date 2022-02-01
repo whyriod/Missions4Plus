@@ -1,0 +1,19 @@
+﻿body {
+}
+
+img {
+    height: 300px;
+}
+
+h1 {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+label {
+    width: 150px;
+    display: inline-block;
+}
+
+textarea {
+    font-size: 20px;
+}
