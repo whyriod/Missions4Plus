@@ -15,16 +15,73 @@ namespace Movies.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.22");
 
+            modelBuilder.Entity("Movies.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            Name = "Action/Adventure"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            Name = "Comedy"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            Name = "Drama"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            Name = "Family"
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            Name = "Horror/Suspense"
+                        },
+                        new
+                        {
+                            CategoryId = 6,
+                            Name = "Miscellaneous"
+                        },
+                        new
+                        {
+                            CategoryId = 7,
+                            Name = "Television"
+                        },
+                        new
+                        {
+                            CategoryId = 8,
+                            Name = "VHS"
+                        });
+                });
+
             modelBuilder.Entity("Movies.Models.MovieModel", b =>
                 {
                     b.Property<int>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edited")
@@ -37,9 +94,11 @@ namespace Movies.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Rating")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Year")
@@ -47,13 +106,15 @@ namespace Movies.Migrations
 
                     b.HasKey("MovieId");
 
-                    b.ToTable("Responses");
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Movies");
 
                     b.HasData(
                         new
                         {
                             MovieId = 1,
-                            Category = "Action",
+                            CategoryId = 1,
                             Director = "Jerry London",
                             Edited = "",
                             LentTo = "",
@@ -65,7 +126,7 @@ namespace Movies.Migrations
                         new
                         {
                             MovieId = 2,
-                            Category = "Comedy",
+                            CategoryId = 3,
                             Director = "Melvin Frank and Norman Panama",
                             Edited = "",
                             LentTo = "",
@@ -77,7 +138,7 @@ namespace Movies.Migrations
                         new
                         {
                             MovieId = 3,
-                            Category = "Comedy",
+                            CategoryId = 2,
                             Director = "Robert Stevenson",
                             Edited = "",
                             LentTo = "",
@@ -86,6 +147,15 @@ namespace Movies.Migrations
                             Title = "The Absent-Minded Professor",
                             Year = 1961
                         });
+                });
+
+            modelBuilder.Entity("Movies.Models.MovieModel", b =>
+                {
+                    b.HasOne("Movies.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

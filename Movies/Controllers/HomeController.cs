@@ -6,17 +6,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Movies.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private MovieContext _context { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, MovieContext context)
+        public HomeController(MovieContext context)
         {
-            _logger = logger;
             this._context = context;
         }
 
@@ -25,34 +24,86 @@ namespace Movies.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult MovieEntry()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult MovieEntry(MovieModel m)
-        {
-            _context.Add(m);
-            _context.SaveChanges();
-            return View("Submitted", m);
-        }
-
         public IActionResult MyPodcasts()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+
+        [HttpGet]
+        public IActionResult Delete(int id)
         {
-            return View();
+            ViewBag.Categories = _context.Categories.ToList();
+            var record = _context.Movies.Single(x => x.MovieId == id);
+            return View("MovieDelete",record);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult Delete(MovieModel m)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            _context.Movies.Remove(m);
+            _context.SaveChanges();
+            return RedirectToAction("MovieList");
         }
+
+
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            ViewBag.Categories = _context.Categories.ToList();
+            var record = _context.Movies.Single(x => x.MovieId == id);
+            return View("MovieEntry", record);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(MovieModel movie)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Movies.Update(movie);
+                _context.SaveChanges();
+                return RedirectToAction("MovieList");
+            }
+            else
+            {
+                ViewBag.Categories = _context.Categories.ToList();
+                return View(movie);
+            }
+        }
+
+
+
+        [HttpGet]
+        public IActionResult MovieEntry()
+        {
+            ViewBag.Categories = _context.Categories.ToList();
+            return View(new MovieModel());
+        }
+
+        [HttpPost]
+        public IActionResult MovieEntry(MovieModel m)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(m);
+                _context.SaveChanges();
+                return View("Submitted", m);
+            }
+            else
+            {
+                ViewBag.Categories = _context.Categories.ToList();
+                return View(m);
+            }
+        }
+
+
+
+        public IActionResult MovieList()
+        {
+            var movies = _context.Movies.Include(X => X.Category).ToList();
+            return View(movies);
+        }
+
     }
 }
